@@ -300,7 +300,8 @@ const results = await retriever.search(
 - [ ] Read `contracts/` (understand Zod schemas)
 - [ ] Read `core/orchestrator/ConvergedAgentOrchestrator.ts` (the main engine)
 - [ ] Read `capabilities/index.ts` (the 5 agents)
-- [ ] Look at `extensions/finance/agent.ts` (example of extending)
+- [ ] Look at `extensions/finance/agent.ts` (agent-level customization pattern)
+- [ ] Look at `examples/finance-compliance/` (hook-based customization pattern)
 
 **Time:** 2-3 hours
 
@@ -308,10 +309,21 @@ const results = await retriever.search(
 
 - [ ] Run `npm run demo` with different feature requests
 - [ ] Look at demo output (what are the 5 stages producing?)
-- [ ] Read evaluation metrics (quality, cost, latency)
+- [ ] Check evaluation metrics in logs (quality score, cost/tokens, latency per stage)
+  - See [Evaluation Layer](../evaluation/README.md) for how to run regression tests
+  - See [Scorecard Metrics](../evaluation/scorecards/README.md) for quality definitions
 - [ ] Modify demo to use your LLM provider instead of MockProvider
 
 **Time:** 2-3 hours
+
+### Week 1: Choose Your Starter Kit
+
+- [ ] Review [Starter Kits Decision Guide](../../starter-kits/README.md)
+- [ ] Pick one: TypeScript Basic (learning), TypeScript Full (production), or Python Extension (integration)
+- [ ] Copy kit to your project
+- [ ] Run its demo: `npm install && npm run demo`
+
+**Time:** 1-2 hours
 
 ### Week 2: Start Integration (Step 1 of Adoption)
 

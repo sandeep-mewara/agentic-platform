@@ -298,10 +298,11 @@ Follow this structure:
 ### To Promote to Baseline
 
 If your example's override proves broadly useful (3+ teams, strong metrics):
-1. Register in evaluation metrics
-2. Submit to Architecture Council
-3. Follow [Promotion Lifecycle](../docs/promotion-lifecycle/README.md)
-4. Becomes baseline capability for all teams
+1. Measure with Wave 8: Run [regression tests](../evaluation/README.md) and generate [scorecards](../evaluation/scorecards/README.md)
+2. Gather metrics: quality score, cost delta, reliability over time
+3. Submit to Architecture Council with metrics evidence
+4. Follow [Promotion Lifecycle](../docs/promotion-lifecycle/README.md) for evaluation → baseline graduation
+5. Your pattern becomes baseline capability for all teams
 
 ---
 

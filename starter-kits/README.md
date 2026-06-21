@@ -350,6 +350,25 @@ logger.info('Budget status', {
 
 ---
 
+## Verify Your Kit (Quality Metrics)
+
+After customizing your kit, validate quality and correctness:
+
+**Regression Testing:** Use `evaluation/` to verify outputs match expected schemas
+```bash
+# Loads golden dataset, runs your kit, compares outputs
+npm test
+```
+
+**Quality Metrics:** Monitor quality, cost, and latency
+- Quality score: 0-100 (based on output completeness)
+- Cost: Track via SpendTracker (tokens × rate)
+- Latency: Time per stage (check logs)
+
+See [Evaluation Layer](../evaluation/README.md) for regression testing and scorecard metrics.
+
+---
+
 ## Contributing to Starter Kits
 
 If you improve a kit, share back!

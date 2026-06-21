@@ -27,7 +27,7 @@ npm test                  # Vitest smoke + unit tests
 | `evaluation/` | 8 | Golden datasets, regression tests, scorecards |
 | `docs/` | 9 | Mapping to article, architecture overview, runbooks, promotion guide |
 | `starter-kits/` | 10 | Copyable templates for new capabilities and extensions |
-| `examples/` | 11 | PDLC demo end-to-end |
+| `examples/` | 11 | Reference implementations for domains (finance, healthcare, ML) |
 
 ## Architecture Highlights
 
