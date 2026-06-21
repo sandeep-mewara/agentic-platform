@@ -1,6 +1,6 @@
 # Agentic Platform
 
-Reference implementation companion to **"Agentic Development: From Divergence to a Self-Evolving Platform"**.
+Reference implementation companion to **[Agentic Development: From Divergence to a Self-Evolving Platform](https://learnbyinsight.com/2026/06/21/agentic-development-from-divergence-to-a-self-evolving-platform/)**.
 
 ## The Problem We Solve
 
@@ -83,11 +83,7 @@ Coverage:
 - Smoke: Full PDLC demo produces ReleaseReadinessReport with APPROVED status
 - Unit: HookRegistry, TraceEmitter, SecurityScanner behavior
 
-## Implementation Status
-
-- Wave 1 (Contracts): ✓
-- Wave 2–11: In progress
 
 ## License
 
-Educational reference only. See article for full context.
+Educational reference only. See [article](https://learnbyinsight.com/2026/06/21/agentic-development-from-divergence-to-a-self-evolving-platform/) for full context.
