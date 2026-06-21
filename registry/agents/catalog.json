@@ -1,0 +1,65 @@
+[
+  {
+    "id": "agent-requirements-core",
+    "name": "RequirementsAgent",
+    "capability": "requirements",
+    "owner": "Platform Team",
+    "version": "1.0.0",
+    "description": "Decomposes feature requests into structured requirement briefs with objectives, constraints, success criteria, assumptions, and risks",
+    "tags": ["core", "pdlc-stage-1", "llm-powered"]
+  },
+  {
+    "id": "agent-architecture-core",
+    "name": "ArchitectureReviewAgent",
+    "capability": "architecture",
+    "owner": "Platform Team",
+    "version": "1.0.0",
+    "description": "Evaluates requirements against architectural layers (API, business, data, security) and produces comprehensive architecture reviews",
+    "tags": ["core", "pdlc-stage-2", "llm-powered", "decision-gate"]
+  },
+  {
+    "id": "agent-planning-core",
+    "name": "PlanningAgent",
+    "capability": "planning",
+    "owner": "Platform Team",
+    "version": "1.0.0",
+    "description": "Produces detailed implementation plans with phased task breakdown, dependencies, risk mitigation, and success metrics",
+    "tags": ["core", "pdlc-stage-3", "llm-powered"]
+  },
+  {
+    "id": "agent-testing-core",
+    "name": "TestingAgent",
+    "capability": "testing",
+    "owner": "Platform Team",
+    "version": "1.0.0",
+    "description": "Designs comprehensive test coverage including unit, integration, E2E, performance, and security tests",
+    "tags": ["core", "pdlc-stage-4", "llm-powered", "quality-gates"]
+  },
+  {
+    "id": "agent-release-core",
+    "name": "ReleaseReadinessAgent",
+    "capability": "release",
+    "owner": "Platform Team",
+    "version": "1.0.0",
+    "description": "Synthesizes all artifacts to assess release readiness and produce a decision report for HITL gate",
+    "tags": ["core", "pdlc-stage-5", "llm-powered", "decision-gate"]
+  },
+  {
+    "id": "agent-finance-compliance",
+    "name": "FinanceComplianceAgent",
+    "capability": "extension",
+    "owner": "Finance Team",
+    "version": "1.0.0",
+    "description": "Extends ArchitectureReviewAgent to inject SOX compliance checks for financial systems",
+    "tags": ["extension", "finance", "compliance", "hooks-based"]
+  },
+  {
+    "id": "agent-tax-validation",
+    "name": "TaxValidationAgent",
+    "capability": "extension",
+    "owner": "Tax Team",
+    "version": "1.0.0",
+    "description": "Python-based polyglot agent that validates requirements against tax domain rules via JSON stdin/stdout contract",
+    "tags": ["extension", "tax", "polyglot", "python", "validation"]
+  }
+]
