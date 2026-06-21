@@ -1,13 +1,16 @@
-# Platform Architecture Documentation
+# Platform Architecture: Principles & Design Thinking
 
-Complete architecture reference for the agentic platform baseline. Maps to the article "Agentic Development: From Divergence to a Self-Evolving Platform."
+The philosophy and design thinking behind the agentic platform. For Wave-by-Wave implementation details, see [docs/DESIGN.md](../DESIGN.md).
+
+Maps to the article "Agentic Development: From Divergence to a Self-Evolving Platform."
 
 ## Quick Links
 
 - [Core Principle: Converge Capabilities](#core-principle)
-- [Target Reference Architecture](#reference-architecture)
+- [8-Layer Reference Architecture](#reference-architecture)
 - [Component Classification Model](#component-model)
 - [Ownership & Governance](#ownership)
+- [Wave-by-Wave Implementation Details](../DESIGN.md) ← Start here if you want to understand *why* each component was built
 
 ## Core Principle: Converge Capabilities {#core-principle}
 

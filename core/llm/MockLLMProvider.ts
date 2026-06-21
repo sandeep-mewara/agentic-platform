@@ -308,6 +308,10 @@ export class MockLLMProvider implements LLMProvider {
 
   async complete(prompt: string): Promise<string> {
     // Deterministic routing based on prompt keywords
+    // Note: Order matters! Check more specific patterns first
+    if (prompt.includes('release readiness') || (prompt.includes('release') && prompt.includes('readiness'))) {
+      return this.responses['release-readiness']
+    }
     if (prompt.includes('requirements-analysis') || prompt.includes('feature request')) {
       return this.responses['requirements-analysis']
     }
@@ -319,9 +323,6 @@ export class MockLLMProvider implements LLMProvider {
     }
     if (prompt.includes('code-review') || prompt.includes('test plan')) {
       return this.responses['code-review']
-    }
-    if (prompt.includes('release') || prompt.includes('readiness')) {
-      return this.responses['release-readiness']
     }
     // Default fallback
     return this.responses['requirements-analysis']

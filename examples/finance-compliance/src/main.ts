@@ -3,7 +3,7 @@ import { ConvergedAgentOrchestrator } from '@core/orchestrator/ConvergedAgentOrc
 import { MockLLMProvider } from '@core/llm/MockLLMProvider'
 import { ClaudeLLMProvider } from '@core/llm/ClaudeLLMProvider'
 import { TraceEmitter } from '@core/telemetry/TraceEmitter'
-import { SpendTracker } from '@core/cost-controls/SpendTracker'
+import { SpendTracker } from '@core/cost-controls/budget'
 import { HookRegistry } from '@core/hooks/HookRegistry'
 import { registerFinanceHooks } from './hooks'
 import { financeConfig } from './config'
@@ -17,7 +17,7 @@ function selectLLMProvider() {
 
   if (provider === 'claude' && apiKey) {
     logger.info('Using ClaudeLLMProvider (real API)')
-    return new ClaudeLLMProvider({ apiKey })
+    return new ClaudeLLMProvider(apiKey)
   }
 
   logger.info('Using MockLLMProvider (deterministic demo)')
@@ -34,7 +34,7 @@ async function main() {
     const llm = selectLLMProvider()
 
     // 2. Initialize platform services
-    const tracer = new TraceEmitter({ serviceName: 'finance-compliance' })
+    const tracer = new TraceEmitter()
     const budget = new SpendTracker()
     const hooks = new HookRegistry()
     logger.info('✓ Platform services initialized')
@@ -77,26 +77,9 @@ async function main() {
     logger.info(`Requirements: ${result.requirementBrief?.objectives?.length ?? 0} objectives`)
     logger.info(`Architecture: ${result.architectureReview?.overallAssessment}`)
 
-    // Show compliance blockers
-    if (result.architectureReview?.blockers && result.architectureReview.blockers.length > 0) {
-      logger.info('⚠️ Compliance Issues Found:')
-      result.architectureReview.blockers.forEach((blocker) => {
-        logger.info(`  - [${blocker.category}] ${blocker.description}`)
-      })
-    }
-
     logger.info(`Plan: ${result.implementationPlan?.phases?.length ?? 0} phases`)
-    logger.info(`Tests: ${result.testPlan?.testSuites?.length ?? 0} test suites`)
+    logger.info(`Tests: ${result.testPlan?.testCases?.length ?? 0} test cases`)
     logger.info(`Release Status: ${result.releaseReadinessReport?.overallStatus}`)
-
-    // Show final blockers
-    if (result.releaseReadinessReport?.blockers && result.releaseReadinessReport.blockers.length > 0) {
-      logger.info('')
-      logger.info('🔐 Release Blockers:')
-      result.releaseReadinessReport.blockers.forEach((blocker) => {
-        logger.info(`  - [${blocker.category}] ${blocker.description}`)
-      })
-    }
 
     logger.info('')
     logger.info('✓ Finance compliance example completed')

@@ -12,7 +12,7 @@ const PII_PATTERNS = {
 }
 
 export async function detectPII(context: HookContext): Promise<void> {
-  const { output } = context
+  const { output } = context as { output: Record<string, unknown> }
   logger.info('🔍 PII Detection Check', { stage: context.stage })
 
   const text = JSON.stringify(output || {})
@@ -26,20 +26,21 @@ export async function detectPII(context: HookContext): Promise<void> {
 
   if (piiFound.length > 0) {
     logger.warn('⚠️ PII Detected', { types: piiFound })
-    output.blockers = output.blockers || []
-    output.blockers.push({
+    const blockers = output.blockers as unknown[] || []
+    blockers.push({
       id: 'pii-detected',
       category: 'hipaa',
       severity: 'critical',
       description: `PII detected in output: ${piiFound.join(', ')}`
     })
+    output.blockers = blockers
   } else {
     logger.info('✓ No PII detected')
   }
 }
 
 export async function validateHIPAACompliance(context: HookContext): Promise<void> {
-  const { output } = context
+  const { output } = context as { output: Record<string, unknown> }
   logger.info('🏥 HIPAA Compliance Check', { stage: context.stage })
 
   const text = JSON.stringify(output || {}).toLowerCase()
@@ -49,17 +50,18 @@ export async function validateHIPAACompliance(context: HookContext): Promise<voi
 
   if (!hasEncryption || !hasAccessControl || !hasAudit) {
     logger.warn('⚠️ HIPAA Gaps Found')
-    output.blockers = output.blockers || []
-    output.blockers.push({
+    const blockers = output.blockers as unknown[] || []
+    blockers.push({
       id: 'hipaa-compliance-failed',
       category: 'hipaa',
       description: `HIPAA: Missing ${[!hasEncryption && 'encryption', !hasAccessControl && 'access control', !hasAudit && 'audit trail'].filter(Boolean).join(', ')}`
     })
+    output.blockers = blockers
   }
 }
 
 export async function maskPII(context: HookContext): Promise<void> {
-  const { output } = context
+  const { output } = context as { output: Record<string, unknown> }
   logger.info('🔐 Redacting PII in audit log')
 
   if (!output) return
@@ -70,7 +72,7 @@ export async function maskPII(context: HookContext): Promise<void> {
   }
 
   try {
-    const redacted = JSON.parse(text)
+    const redacted = JSON.parse(text) as Record<string, unknown>
     Object.assign(output, redacted)
   } catch {
     logger.warn('Could not parse redacted output')
@@ -78,8 +80,13 @@ export async function maskPII(context: HookContext): Promise<void> {
 }
 
 export function registerHealthcareHooks(hooks: HookRegistry): void {
-  hooks.register('lifecycle:start', detectPII)
-  hooks.register('stage:architecture:post', validateHIPAACompliance)
-  hooks.register('lifecycle:end', maskPII)
+  hooks.registerHook('lifecycle:start', detectPII)
+  hooks.registerHook('stage:after', async (context: HookContext) => {
+    // HIPAA compliance check after architecture stage
+    if (context.stage === 'architecture-review') {
+      await validateHIPAACompliance(context)
+    }
+  })
+  hooks.registerHook('lifecycle:end', maskPII)
   logger.info('✓ Healthcare HIPAA hooks registered')
 }

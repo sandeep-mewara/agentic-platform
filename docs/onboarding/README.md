@@ -90,9 +90,11 @@ Key takeaway: **Contracts define interfaces; Core provides common concerns; Team
 
 ### 4. Read the Architecture Overview (10 min)
 
-Start here: [Platform Architecture Documentation](../architecture/README.md)
+**Option A (Recommended):** [Platform Design: Wave-by-Wave](../DESIGN.md) — Understand *why* each component was built in the order it was. Takes 10-15 min, very concrete.
 
-**5 minutes:** Skip to "8 Core Layers" section. Understand:
+**Option B:** [Architecture Principles](../architecture/README.md) — Understand the philosophy and design thinking. Good for understanding "why we chose this approach" vs. others.
+
+**Both:** 5 minutes on either: Understand:
 - Layer 1: Knowledge & Context (trusted organizational decisions)
 - Layer 2: Contracts (standardized data interfaces)
 - Layer 3: Skills (reusable utilities)

@@ -416,10 +416,11 @@ for multiple teams?
 
 ## Related Documentation
 
-- [Platform Architecture](../architecture/README.md)
-- [Progressive Adoption Runbook](../runbooks/progressive-adoption.md)
-- [Evaluation Plane & Metrics](../../evaluation/README.md)
-- [New Team Onboarding](../onboarding/README.md)
+- [Platform Design: Wave-by-Wave Architecture](../DESIGN.md) — Understand the baseline architecture that accepts overrides
+- [Architecture Principles](../architecture/README.md) — Core concepts and design thinking
+- [Progressive Adoption Runbook](../runbooks/progressive-adoption.md) — How teams integrate with baseline before promoting overrides
+- [Evaluation Plane & Metrics](../../evaluation/README.md) — How we measure override quality for promotion decisions
+- [New Team Onboarding](../onboarding/README.md) — Getting started
 
 ---
 

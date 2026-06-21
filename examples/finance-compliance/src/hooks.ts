@@ -8,7 +8,7 @@ const logger = pino()
  */
 
 export async function validateSOXCompliance(context: HookContext): Promise<void> {
-  const { output } = context
+  const { output } = context as { output: Record<string, unknown> }
 
   logger.info('📋 SOX Compliance Check', { stage: context.stage })
 
@@ -35,20 +35,21 @@ export async function validateSOXCompliance(context: HookContext): Promise<void>
   if (violations.length > 0) {
     logger.warn('⚠️ SOX Compliance Issues Found', { violations })
 
-    output.blockers = output.blockers || []
-    output.blockers.push({
+    const blockers = output.blockers as unknown[] || []
+    blockers.push({
       id: 'sox-compliance-failed',
       category: 'compliance',
       severity: 'high',
       description: `SOX Compliance: ${violations.join('; ')}`
     })
+    output.blockers = blockers
   } else {
     logger.info('✓ SOX Compliance Check Passed')
   }
 }
 
 export async function validateTaxCompliance(context: HookContext): Promise<void> {
-  const { output } = context
+  const { output } = context as { output: Record<string, unknown> }
 
   logger.info('💰 Tax Compliance Check', { stage: context.stage })
 
@@ -75,20 +76,21 @@ export async function validateTaxCompliance(context: HookContext): Promise<void>
   if (violations.length > 0) {
     logger.warn('⚠️ Tax Compliance Issues Found', { violations })
 
-    output.blockers = output.blockers || []
-    output.blockers.push({
+    const blockers = output.blockers as unknown[] || []
+    blockers.push({
       id: 'tax-compliance-failed',
       category: 'tax',
       severity: 'medium',
       description: `Tax Compliance: ${violations.join('; ')}`
     })
+    output.blockers = blockers
   } else {
     logger.info('✓ Tax Compliance Check Passed')
   }
 }
 
 export async function validateCostTracking(context: HookContext): Promise<void> {
-  const { output } = context
+  const { output } = context as { output: Record<string, unknown> }
 
   logger.info('💳 Financial Cost Tracking', { stage: context.stage })
 
@@ -106,20 +108,30 @@ export async function validateCostTracking(context: HookContext): Promise<void> 
   if (costData.estimatedCost > costData.totalBudget * 0.05) {
     logger.warn('⚠️ Cost Alert: Feature cost is >5% of budget', costData)
 
-    output.metadata = output.metadata || {}
-    output.metadata.costWarning = `Feature estimated cost $${costData.estimatedCost} (${((costData.estimatedCost / costData.totalBudget) * 100).toFixed(1)}% of budget)`
+    const metadata = output.metadata as Record<string, unknown> || {}
+    metadata.costWarning = `Feature estimated cost $${costData.estimatedCost} (${((costData.estimatedCost / costData.totalBudget) * 100).toFixed(1)}% of budget)`
+    output.metadata = metadata
   }
 }
 
 export function registerFinanceHooks(hooks: HookRegistry): void {
-  // SOX compliance check after architecture review
-  hooks.register('stage:architecture:post', validateSOXCompliance)
+  // Finance hooks run after each stage and check context to determine applicability
+  hooks.registerHook('stage:after', async (context: HookContext) => {
+    // SOX compliance check after architecture review
+    if (context.stage === 'architecture-review') {
+      await validateSOXCompliance(context)
+    }
 
-  // Tax compliance check after planning
-  hooks.register('stage:planning:post', validateTaxCompliance)
+    // Tax compliance check after planning
+    if (context.stage === 'planning') {
+      await validateTaxCompliance(context)
+    }
 
-  // Cost tracking after requirements
-  hooks.register('stage:requirements:post', validateCostTracking)
+    // Cost tracking after requirements
+    if (context.stage === 'requirements-analysis') {
+      await validateCostTracking(context)
+    }
+  })
 
   logger.info('✓ Finance compliance hooks registered')
 }
@@ -128,18 +140,20 @@ export function registerConditionalFinanceHooks(
   hooks: HookRegistry,
   features: { sox?: boolean; tax?: boolean; cost?: boolean }
 ): void {
-  if (features.sox !== false) {
-    hooks.register('stage:architecture:post', validateSOXCompliance)
-    logger.info('✓ SOX validation hook registered')
-  }
+  hooks.registerHook('stage:after', async (context: HookContext) => {
+    if (features.sox !== false && context.stage === 'architecture-review') {
+      await validateSOXCompliance(context)
+      logger.info('✓ SOX validation executed')
+    }
 
-  if (features.tax !== false) {
-    hooks.register('stage:planning:post', validateTaxCompliance)
-    logger.info('✓ Tax validation hook registered')
-  }
+    if (features.tax !== false && context.stage === 'planning') {
+      await validateTaxCompliance(context)
+      logger.info('✓ Tax validation executed')
+    }
 
-  if (features.cost !== false) {
-    hooks.register('stage:requirements:post', validateCostTracking)
-    logger.info('✓ Cost tracking hook registered')
-  }
+    if (features.cost !== false && context.stage === 'requirements-analysis') {
+      await validateCostTracking(context)
+      logger.info('✓ Cost tracking executed')
+    }
+  })
 }

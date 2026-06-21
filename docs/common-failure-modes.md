@@ -435,7 +435,8 @@ If you answered "no" to any, address that failure mode.
 
 ## Related Documentation
 
-- [Architecture Overview](docs/architecture/README.md)
-- [Progressive Adoption Runbook](docs/runbooks/progressive-adoption.md)
-- [Override → Baseline Promotion](docs/promotion-lifecycle/README.md)
-- [New Team Onboarding](docs/onboarding/README.md)
+- [Platform Design: Wave-by-Wave Architecture](DESIGN.md) — Understand how the platform prevents these failure modes by design
+- [Architecture Principles](architecture/README.md) — Core concepts and design thinking
+- [Progressive Adoption Runbook](runbooks/progressive-adoption.md) — Adoption path that prevents many of these modes
+- [Override → Baseline Promotion](promotion-lifecycle/README.md) — Governance that prevents premature promotion
+- [New Team Onboarding](onboarding/README.md) — Getting started safely

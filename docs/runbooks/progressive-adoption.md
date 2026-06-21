@@ -470,8 +470,8 @@ After successful adoption:
 
 ## Related Documentation
 
-- [Architecture Overview](../architecture/README.md)
-- [Override → Baseline Promotion](../promotion-lifecycle/README.md)
-- [New Team Onboarding](../onboarding/README.md)
-- [Common Failure Modes](../common-failure-modes.md)
-- [Platform API Reference](../api-reference.md) (coming soon)
+- [Platform Design: Wave-by-Wave Architecture](../DESIGN.md) — Understand why each step exists (Wave 2 core runtime, Wave 3 governance, etc.)
+- [Architecture Principles](../architecture/README.md) — Core concepts and design thinking
+- [Override → Baseline Promotion](../promotion-lifecycle/README.md) — How overrides graduate after adoption
+- [New Team Onboarding](../onboarding/README.md) — First week quick start
+- [Common Failure Modes](../common-failure-modes.md) — What to watch out for

@@ -2,7 +2,7 @@ import 'dotenv/config'
 import { ConvergedAgentOrchestrator } from '@core/orchestrator/ConvergedAgentOrchestrator'
 import { MockLLMProvider } from '@core/llm/MockLLMProvider'
 import { TraceEmitter } from '@core/telemetry/TraceEmitter'
-import { SpendTracker } from '@core/cost-controls/SpendTracker'
+import { SpendTracker } from '@core/cost-controls/budget'
 import { HookRegistry } from '@core/hooks/HookRegistry'
 import { registerHealthcareHooks } from './hooks'
 import pino from 'pino'
@@ -16,7 +16,7 @@ async function main() {
     logger.info('')
 
     const llm = new MockLLMProvider()
-    const tracer = new TraceEmitter({ serviceName: 'healthcare-hipaa' })
+    const tracer = new TraceEmitter()
     const budget = new SpendTracker()
     const hooks = new HookRegistry()
 
@@ -38,12 +38,6 @@ async function main() {
     logger.info('=== Results ===')
     logger.info(`Requirements: ✓`)
     logger.info(`Architecture: ${result.architectureReview?.overallAssessment}`)
-
-    if (result.architectureReview?.blockers?.length) {
-      logger.info('⚠️ Compliance Issues:')
-      result.architectureReview.blockers.forEach((b) => logger.info(`  - ${b.description}`))
-    }
-
     logger.info(`Release Status: ${result.releaseReadinessReport?.overallStatus}`)
     logger.info('')
     logger.info('✓ Healthcare example completed')
