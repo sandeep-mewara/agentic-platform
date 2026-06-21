@@ -1,0 +1,26 @@
+[
+  {
+    "id": "pattern-sequential-pdlc",
+    "name": "Sequential PDLC",
+    "type": "sequential",
+    "description": "Default pattern: Requirements → Architecture → Planning → Testing → Release. Each stage runs to completion before next begins. Suitable for standard feature development."
+  },
+  {
+    "id": "pattern-parallel-validation",
+    "name": "Parallel Validation",
+    "type": "parallel",
+    "description": "Run multiple reviewers/extensions simultaneously (e.g., core architecture + finance compliance + tax validation). Converge results at decision gate. Suitable for high-stakes or regulated features."
+  },
+  {
+    "id": "pattern-critique-panel",
+    "name": "Critique Panel Review",
+    "type": "critique",
+    "description": "Gather multiple independent perspectives on a decision gate (e.g., 3 architecture reviewers, 2 security experts). Vote-based or consensus decision. Suitable for critical architectural decisions."
+  },
+  {
+    "id": "pattern-lightweight-arch",
+    "name": "Lightweight Architecture",
+    "type": "sequential",
+    "description": "Abbreviated sequential: Requirements → Architecture only (skip planning/testing for low-risk changes). Quick validation for minor features or configuration changes."
+  }
+]

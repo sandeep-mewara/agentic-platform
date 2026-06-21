@@ -1,0 +1,37 @@
+[
+  {
+    "id": "skill-requirements-analysis",
+    "name": "Requirements Analysis",
+    "path": "skills/requirements-analysis/SKILL.md",
+    "reusable": false,
+    "usedBy": ["agent-requirements-core"]
+  },
+  {
+    "id": "skill-architecture-review",
+    "name": "Architecture Review",
+    "path": "skills/architecture-review/SKILL.md",
+    "reusable": false,
+    "usedBy": ["agent-architecture-core", "agent-finance-compliance"]
+  },
+  {
+    "id": "skill-planning",
+    "name": "Implementation Planning",
+    "path": "skills/planning/SKILL.md",
+    "reusable": false,
+    "usedBy": ["agent-planning-core"]
+  },
+  {
+    "id": "skill-code-review",
+    "name": "Code Review & Quality Analysis",
+    "path": "skills/code-review/SKILL.md",
+    "reusable": true,
+    "usedBy": ["agent-testing-core", "agent-release-core"]
+  },
+  {
+    "id": "skill-documentation",
+    "name": "Documentation & Release Readiness",
+    "path": "skills/documentation/SKILL.md",
+    "reusable": false,
+    "usedBy": ["agent-release-core"]
+  }
+]

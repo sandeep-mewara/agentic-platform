@@ -1,0 +1,26 @@
+[
+  {
+    "id": "workflow-full-pdlc",
+    "name": "Full PDLC Pipeline",
+    "stages": ["requirements", "architecture", "planning", "testing", "release"],
+    "description": "Complete product development lifecycle from requirements through release readiness assessment"
+  },
+  {
+    "id": "workflow-architecture-focus",
+    "name": "Architecture-Focused Review",
+    "stages": ["requirements", "architecture"],
+    "description": "Lightweight workflow for architectural validation of new features without full planning/testing"
+  },
+  {
+    "id": "workflow-compliance-finance",
+    "name": "Finance Compliance Pipeline",
+    "stages": ["requirements", "architecture", "planning", "testing", "release"],
+    "description": "PDLC pipeline with SOX compliance checks injected at architecture stage via FinanceComplianceAgent"
+  },
+  {
+    "id": "workflow-quality-focused",
+    "name": "Quality-Focused Assessment",
+    "stages": ["planning", "testing", "release"],
+    "description": "Focused on testing and quality for existing features or refactoring work"
+  }
+]
