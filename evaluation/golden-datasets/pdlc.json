@@ -1,0 +1,609 @@
+{
+  "featureRequest": "Add OAuth 2.0 authentication to support single sign-on (SSO) across multiple applications in the platform",
+  "expectedOutputs": {
+    "stage1_requirementBrief": {
+      "artifactId": "brief-oauth-sso-001",
+      "featureRequest": "Add OAuth 2.0 authentication to support single sign-on (SSO) across multiple applications in the platform",
+      "objectives": [
+        "Implement OAuth 2.0 authorization server",
+        "Support multiple client applications",
+        "Enable seamless SSO experience across platform",
+        "Maintain backward compatibility with existing API keys"
+      ],
+      "constraints": [
+        "Must comply with GDPR and CCPA data privacy regulations",
+        "Existing integrations must not break",
+        "Implementation must complete within 3 sprints",
+        "Must support both web and mobile clients"
+      ],
+      "successCriteria": [
+        "Users can authenticate via OAuth 2.0 from any client",
+        "Token generation and validation latency < 200ms",
+        "Support minimum 1000 concurrent SSO sessions",
+        "Zero breaking changes to existing API"
+      ],
+      "assumptions": [
+        "Third-party identity provider (e.g., Auth0) will be used",
+        "Database schema supports token storage",
+        "Backend infrastructure can handle increased load"
+      ],
+      "risks": [
+        {
+          "category": "Security",
+          "description": "Token compromise could grant unauthorized access",
+          "severity": "HIGH"
+        },
+        {
+          "category": "Performance",
+          "description": "Increased authentication latency under high load",
+          "severity": "MEDIUM"
+        },
+        {
+          "category": "Integration",
+          "description": "Legacy clients may not support OAuth",
+          "severity": "MEDIUM"
+        }
+      ],
+      "estimatedEffort": {
+        "scope": "LARGE",
+        "daysEstimate": 45
+      },
+      "metadata": {
+        "createdBy": "ProductTeam",
+        "createdAt": 1719062400000,
+        "version": "1.0"
+      }
+    },
+    "stage2_architectureReview": {
+      "artifactId": "arch-oauth-sso-001",
+      "requirementBriefId": "brief-oauth-sso-001",
+      "overallAssessment": "APPROVED",
+      "summary": "OAuth 2.0 architecture is sound and aligns with industry standards. Recommends token caching layer and separate identity service. Security review passed with conditions on token refresh mechanism.",
+      "layerReview": [
+        {
+          "layer": "Presentation",
+          "assessment": "Login UI/flows must support redirect-based OAuth. Consider using OAuth 2.0 PKCE for mobile clients.",
+          "concerns": [
+            "Mobile client token handling not detailed"
+          ]
+        },
+        {
+          "layer": "Business Logic",
+          "assessment": "Token generation, validation, and refresh logic properly separated. Recommend caching layer for token validation.",
+          "concerns": []
+        },
+        {
+          "layer": "Data",
+          "assessment": "Token storage requires encryption at rest. Consider token versioning for rotation.",
+          "concerns": [
+            "Encryption key rotation strategy needed"
+          ]
+        }
+      ],
+      "dependencies": [
+        {
+          "component": "Identity Provider (Auth0/similar)",
+          "reason": "Third-party OAuth provider for user authentication"
+        },
+        {
+          "component": "Redis Cache",
+          "reason": "Token validation caching for performance"
+        },
+        {
+          "component": "PostgreSQL",
+          "reason": "Token and consent storage"
+        }
+      ],
+      "scalability": {
+        "concern": "Token validation must support 1000+ concurrent sessions",
+        "recommendation": "Implement distributed token cache with Redis"
+      },
+      "security": [
+        {
+          "category": "Token Theft",
+          "description": "Tokens stored in browser localStorage are vulnerable to XSS",
+          "severity": "HIGH",
+          "mitigation": "Use HttpOnly cookies for token storage; implement CSRF protection"
+        },
+        {
+          "category": "Token Refresh",
+          "description": "Refresh token rotation not mentioned",
+          "severity": "MEDIUM",
+          "mitigation": "Implement refresh token rotation on every use"
+        }
+      ],
+      "compliance": [
+        "GDPR: Ensure user consent logged and auditable",
+        "CCPA: Support user data deletion from OAuth sessions"
+      ],
+      "recommendations": [
+        "Implement token caching layer (Redis) for validation",
+        "Use HttpOnly cookies for token storage",
+        "Add refresh token rotation mechanism",
+        "Encrypt tokens at rest in database",
+        "Create separate identity microservice for scaling"
+      ],
+      "metadata": {
+        "createdBy": "ArchitectureTeam",
+        "createdAt": 1719148800000,
+        "version": "1.0"
+      }
+    },
+    "stage3_implementationPlan": {
+      "artifactId": "plan-oauth-sso-001",
+      "requirementBriefId": "brief-oauth-sso-001",
+      "architectureReviewId": "arch-oauth-sso-001",
+      "overview": "Implement OAuth 2.0 in 3 phases: (1) Core identity service + token generation, (2) API gateway integration + client libraries, (3) Token caching, monitoring, and load testing.",
+      "phases": [
+        {
+          "phaseNumber": 1,
+          "name": "Core Identity Service",
+          "description": "Build identity microservice handling OAuth 2.0 flow, token generation, validation, and database schema for tokens/consents.",
+          "estimatedDuration": {
+            "value": 2,
+            "unit": "WEEKS"
+          },
+          "tasks": [
+            {
+              "taskId": "phase1-task1",
+              "title": "Design OAuth 2.0 token and consent schema",
+              "description": "Create PostgreSQL schema for tokens, refresh tokens, and user consents",
+              "assignedTo": "DatabaseEngineer",
+              "dependencies": [],
+              "estimatedHours": 16
+            },
+            {
+              "taskId": "phase1-task2",
+              "title": "Implement token generation service",
+              "description": "Build JWT token generation with configurable expiration and claims",
+              "assignedTo": "BackendEngineer1",
+              "dependencies": ["phase1-task1"],
+              "estimatedHours": 24
+            },
+            {
+              "taskId": "phase1-task3",
+              "title": "Implement token validation service",
+              "description": "Build token verification with signature validation and expiration checks",
+              "assignedTo": "BackendEngineer2",
+              "dependencies": ["phase1-task2"],
+              "estimatedHours": 20
+            },
+            {
+              "taskId": "phase1-task4",
+              "title": "Integrate with Auth0",
+              "description": "Set up Auth0 tenant and OAuth provider integration",
+              "assignedTo": "DevOps",
+              "dependencies": [],
+              "estimatedHours": 12
+            }
+          ]
+        },
+        {
+          "phaseNumber": 2,
+          "name": "API Gateway Integration",
+          "description": "Update API gateway to validate OAuth tokens, provide client libraries, and support legacy API keys alongside new OAuth.",
+          "estimatedDuration": {
+            "value": 2,
+            "unit": "WEEKS"
+          },
+          "tasks": [
+            {
+              "taskId": "phase2-task1",
+              "title": "Implement OAuth middleware in API gateway",
+              "description": "Add middleware to validate OAuth tokens on protected endpoints",
+              "assignedTo": "BackendEngineer1",
+              "dependencies": ["phase1-task3"],
+              "estimatedHours": 20
+            },
+            {
+              "taskId": "phase2-task2",
+              "title": "Create OAuth client libraries (SDK)",
+              "description": "Build SDKs for web, mobile, and server-side OAuth client flows",
+              "assignedTo": "BackendEngineer2",
+              "dependencies": [],
+              "estimatedHours": 32
+            },
+            {
+              "taskId": "phase2-task3",
+              "title": "Support legacy API key auth alongside OAuth",
+              "description": "Implement dual authentication: OAuth tokens + existing API keys",
+              "assignedTo": "BackendEngineer1",
+              "dependencies": ["phase2-task1"],
+              "estimatedHours": 16
+            },
+            {
+              "taskId": "phase2-task4",
+              "title": "Update API documentation",
+              "description": "Document new OAuth endpoints, flows, and migration guide",
+              "assignedTo": "TechWriter",
+              "dependencies": ["phase2-task2"],
+              "estimatedHours": 24
+            }
+          ]
+        },
+        {
+          "phaseNumber": 3,
+          "name": "Optimization, Testing & Deployment",
+          "description": "Add caching layer, comprehensive testing, monitoring setup, and production deployment.",
+          "estimatedDuration": {
+            "value": 1,
+            "unit": "WEEKS"
+          },
+          "tasks": [
+            {
+              "taskId": "phase3-task1",
+              "title": "Implement Redis token caching",
+              "description": "Add Redis cache for token validation to reduce database load",
+              "assignedTo": "BackendEngineer2",
+              "dependencies": ["phase2-task1"],
+              "estimatedHours": 20
+            },
+            {
+              "taskId": "phase3-task2",
+              "title": "Comprehensive testing (unit, integration, load)",
+              "description": "Write and run tests; perform load testing for 1000+ concurrent sessions",
+              "assignedTo": "QAEngineer",
+              "dependencies": ["phase3-task1"],
+              "estimatedHours": 40
+            },
+            {
+              "taskId": "phase3-task3",
+              "title": "Set up monitoring and alerting",
+              "description": "Configure metrics, dashboards, and alerts for OAuth service health",
+              "assignedTo": "DevOps",
+              "dependencies": ["phase3-task1"],
+              "estimatedHours": 16
+            },
+            {
+              "taskId": "phase3-task4",
+              "title": "Canary deployment and production rollout",
+              "description": "Deploy to staging, run smoke tests, gradual rollout to production",
+              "assignedTo": "DevOps",
+              "dependencies": ["phase3-task2"],
+              "estimatedHours": 16
+            }
+          ]
+        }
+      ],
+      "technicalApproach": {
+        "architecture": "Microservices: Dedicated OAuth identity service + API gateway middleware",
+        "technologies": [
+          "Node.js for identity service",
+          "PostgreSQL for token/consent storage",
+          "Redis for token caching",
+          "JWT for token format",
+          "Auth0 as OAuth provider",
+          "Docker + Kubernetes for deployment"
+        ],
+        "patterns": [
+          "Authorization Code Flow (web clients)",
+          "PKCE Flow (mobile clients)",
+          "Client Credentials Flow (service-to-service)",
+          "Token caching with write-through strategy"
+        ],
+        "deferredDecisions": [
+          "Which OAuth provider (Auth0, Okta, custom): Decision pending stakeholder meeting"
+        ]
+      },
+      "riskMitigation": [
+        {
+          "risk": "Token theft via XSS",
+          "likelihood": "HIGH",
+          "impact": "HIGH",
+          "mitigation": "Use HttpOnly, Secure, SameSite cookies; implement CSP headers"
+        },
+        {
+          "risk": "Performance degradation under load",
+          "likelihood": "MEDIUM",
+          "impact": "HIGH",
+          "mitigation": "Implement Redis caching; load test with 2000+ concurrent sessions"
+        },
+        {
+          "risk": "Compliance violations (GDPR/CCPA)",
+          "likelihood": "MEDIUM",
+          "impact": "HIGH",
+          "mitigation": "Audit token storage/deletion; ensure user consent logging"
+        }
+      ],
+      "successMetrics": [
+        "Token validation latency < 200ms (p95)",
+        "Support 1000+ concurrent OAuth sessions",
+        "Zero breaking changes to existing API clients",
+        "User adoption: 80% SSO usage within 30 days"
+      ],
+      "rollbackPlan": "Keep legacy API key authentication active. If OAuth service fails, API gateway falls back to API key validation. Rollback deployment: revert to previous image, trigger data migration to restore token state.",
+      "metadata": {
+        "createdBy": "EngineeringTeam",
+        "createdAt": 1719235200000,
+        "version": "1.0"
+      }
+    },
+    "stage4_testPlan": {
+      "artifactId": "test-oauth-sso-001",
+      "implementationPlanId": "plan-oauth-sso-001",
+      "overview": "Comprehensive testing strategy covering OAuth flows, token lifecycle, performance, security, and compatibility.",
+      "testStrategy": {
+        "unitTestCoverage": 85,
+        "integrationTestScope": [
+          "Token generation ↔ validation",
+          "OAuth service ↔ API gateway",
+          "API gateway ↔ protected endpoints",
+          "Token refresh mechanism",
+          "Consent logging"
+        ],
+        "e2eScenarios": [
+          "User login → token grant → API call",
+          "Token expiration → refresh flow",
+          "OAuth logout and token revocation",
+          "Legacy API key fallback",
+          "Concurrent user sessions"
+        ]
+      },
+      "testCases": [
+        {
+          "testId": "oauth-001",
+          "title": "Authorization Code Flow - Happy Path",
+          "description": "User initiates OAuth flow, receives authorization code, exchanges for access token",
+          "type": "E2E",
+          "preconditions": [
+            "OAuth client registered",
+            "Auth0 provider configured"
+          ],
+          "steps": [
+            "Navigate to login page",
+            "Click 'Sign in with OAuth'",
+            "Authenticate on Auth0",
+            "Grant permission to application",
+            "Redirected to app with authorization code",
+            "Backend exchanges code for access token"
+          ],
+          "expectedResult": "Access token received, user logged in, cookie set",
+          "priority": "CRITICAL"
+        },
+        {
+          "testId": "oauth-002",
+          "title": "Token Refresh - Expired Access Token",
+          "description": "User has expired access token; refresh token used to obtain new access token",
+          "type": "INTEGRATION",
+          "preconditions": [
+            "User authenticated with valid refresh token",
+            "Access token expired"
+          ],
+          "steps": [
+            "Attempt API call with expired token",
+            "API gateway detects 401 Unauthorized",
+            "Client sends refresh token",
+            "Service validates refresh token",
+            "New access token issued"
+          ],
+          "expectedResult": "New valid access token issued, user can continue without re-authentication",
+          "priority": "CRITICAL"
+        },
+        {
+          "testId": "oauth-003",
+          "title": "Token Validation - Invalid Signature",
+          "description": "Malformed or tampered token is rejected",
+          "type": "UNIT",
+          "preconditions": [
+            "Token service initialized"
+          ],
+          "steps": [
+            "Generate valid token",
+            "Tamper with token payload",
+            "Attempt validation"
+          ],
+          "expectedResult": "Validation fails with signature error",
+          "priority": "CRITICAL"
+        },
+        {
+          "testId": "oauth-004",
+          "title": "Concurrent SSO Sessions",
+          "description": "Multiple users can maintain concurrent OAuth sessions without interference",
+          "type": "PERFORMANCE",
+          "preconditions": [
+            "OAuth service operational",
+            "Redis cache active"
+          ],
+          "steps": [
+            "Simulate 1000 concurrent user logins",
+            "Each user receives unique token",
+            "Each user makes simultaneous API calls",
+            "Monitor token validation latency"
+          ],
+          "expectedResult": "All users authenticated; token validation latency < 200ms p95",
+          "priority": "HIGH"
+        },
+        {
+          "testId": "oauth-005",
+          "title": "Legacy API Key Fallback",
+          "description": "Old clients using API keys can still authenticate after OAuth rollout",
+          "type": "INTEGRATION",
+          "preconditions": [
+            "OAuth service active",
+            "Legacy API key auth enabled in gateway"
+          ],
+          "steps": [
+            "Old client makes API request with API key",
+            "API gateway checks for OAuth token (missing)",
+            "API gateway checks for API key (present)",
+            "Request validated via API key"
+          ],
+          "expectedResult": "Request succeeds with API key authentication",
+          "priority": "HIGH"
+        }
+      ],
+      "performanceTests": [
+        {
+          "metric": "Token generation latency",
+          "baseline": 0,
+          "target": 50,
+          "unit": "ms"
+        },
+        {
+          "metric": "Token validation latency (cached)",
+          "baseline": 0,
+          "target": 10,
+          "unit": "ms"
+        },
+        {
+          "metric": "Token validation latency (uncached)",
+          "baseline": 0,
+          "target": 150,
+          "unit": "ms"
+        },
+        {
+          "metric": "Concurrent session limit",
+          "baseline": 0,
+          "target": 1000,
+          "unit": "sessions"
+        }
+      ],
+      "securityTests": [
+        "Token theft via XSS prevention (HttpOnly cookies)",
+        "CSRF token validation on OAuth endpoints",
+        "Refresh token rotation on use",
+        "Token revocation and blacklisting",
+        "Rate limiting on token generation",
+        "Consent audit trail verification"
+      ],
+      "qualityGates": [
+        {
+          "name": "Unit Test Coverage",
+          "criterion": "Coverage >= 85% for token service",
+          "threshold": "85%"
+        },
+        {
+          "name": "Integration Tests Pass",
+          "criterion": "All integration tests pass",
+          "threshold": "100%"
+        },
+        {
+          "name": "Security Review",
+          "criterion": "No HIGH severity security issues",
+          "threshold": "0 HIGH"
+        },
+        {
+          "name": "Performance Baseline",
+          "criterion": "Token validation latency < 200ms p95",
+          "threshold": "200ms"
+        }
+      ],
+      "regressionTests": [
+        "All existing API endpoints work with OAuth tokens",
+        "Legacy API key auth still functional",
+        "No performance degradation compared to baseline",
+        "Existing user sessions unaffected"
+      ],
+      "metadata": {
+        "createdBy": "QATeam",
+        "createdAt": 1719321600000,
+        "version": "1.0"
+      }
+    },
+    "stage5_releaseReadinessReport": {
+      "artifactId": "release-oauth-sso-001",
+      "testPlanId": "test-oauth-sso-001",
+      "hiltDecisionId": "hitl-oauth-001",
+      "overallStatus": "APPROVED",
+      "executiveSummary": "OAuth 2.0 implementation is production-ready. All critical path items completed, tests pass, security review cleared with conditions addressed, documentation complete. Recommend canary deployment at 5% traffic, monitor for 48 hours before full rollout.",
+      "readiness": {
+        "codeComplete": true,
+        "testsPass": true,
+        "documentationComplete": true,
+        "performanceAcceptable": true,
+        "securityReview": "APPROVED_WITH_CONDITIONS"
+      },
+      "qualityMetrics": {
+        "codeQuality": {
+          "score": 92,
+          "issues": [
+            {
+              "category": "Code Style",
+              "count": 2,
+              "severity": "LOW"
+            },
+            {
+              "category": "Complexity",
+              "count": 0,
+              "severity": "HIGH"
+            }
+          ]
+        },
+        "testCoverage": {
+          "unit": 88,
+          "integration": 92,
+          "e2e": 85
+        },
+        "documentation": {
+          "readme": true,
+          "apiDocs": true,
+          "setupGuide": true,
+          "troubleshooting": true
+        }
+      },
+      "blockers": [],
+      "recommendations": [
+        "Deploy to staging for 24-hour validation",
+        "Use canary deployment: 5% → 25% → 50% → 100% traffic",
+        "Monitor token validation latency and cache hit rates",
+        "Ensure on-call support familiar with OAuth service",
+        "Prepare customer communication for SSO availability"
+      ],
+      "postReleaseChecklist": [
+        {
+          "item": "Monitor token generation SLOs (latency < 50ms)",
+          "responsible": "DevOps",
+          "dueDate": 1719408000000
+        },
+        {
+          "item": "Verify no spike in authentication errors",
+          "responsible": "SRE",
+          "dueDate": 1719408000000
+        },
+        {
+          "item": "Collect user feedback on SSO experience",
+          "responsible": "ProductTeam",
+          "dueDate": 1719667200000
+        },
+        {
+          "item": "Review security logs for suspicious token patterns",
+          "responsible": "SecurityTeam",
+          "dueDate": 1719408000000
+        }
+      ],
+      "approvals": [
+        {
+          "approver": "EngineeringLead",
+          "role": "Engineering",
+          "status": "APPROVED",
+          "timestamp": 1719360000000,
+          "comment": "Code quality excellent, all tests passing. Safe to deploy."
+        },
+        {
+          "approver": "SecurityLead",
+          "role": "Security",
+          "status": "APPROVED",
+          "timestamp": 1719364800000,
+          "comment": "Approved with condition: ensure HttpOnly cookie enforcement in production."
+        },
+        {
+          "approver": "ProductManager",
+          "role": "Product",
+          "status": "APPROVED",
+          "timestamp": 1719369600000,
+          "comment": "Ready for launch. Plan customer communication before rollout."
+        }
+      ],
+      "metadata": {
+        "createdBy": "ReleaseTeam",
+        "createdAt": 1719379200000,
+        "version": "1.0",
+        "releaseVersion": "2.5.0"
+      }
+    }
+  },
+  "metadata": {
+    "createdAt": "2024-06-21T12:00:00Z",
+    "description": "Golden PDLC dataset: Complete OAuth 2.0 SSO feature from requirements through release approval. Real-world feature demonstrating full product development lifecycle with all 5 stages and realistic data."
+  }
+}
