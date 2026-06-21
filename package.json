@@ -1,0 +1,30 @@
+{
+  "name": "agentic-platform",
+  "version": "0.1.0",
+  "description": "Reference implementation companion to \"Agentic Development: From Divergence to a Self-Evolving Platform\"",
+  "type": "module",
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "demo": "tsx examples/pdlc-demo/run.ts",
+    "demo:polyglot": "tsx examples/pdlc-demo/run.ts --python",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "pino": "^8.17.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3",
+    "tsx": "^4.7.0",
+    "vitest": "^1.0.4"
+  },
+  "optionalDependencies": {
+    "@anthropic-ai/sdk": "^0.12.0"
+  }
+}
